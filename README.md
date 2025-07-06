@@ -76,7 +76,7 @@ class Config:
     train_num_workers = 32            # Training data loader workers
     val_num_workers = 16              # Validation data loader workers
     num_train_epochs = 200            # Number of training epochs
-    gradient_accumulation_steps = 1    # Gradient accumulation steps
+    gradient_accumulation_steps = 1   # Gradient accumulation steps
     sample_rate = 16000               # Audio sample rate
     seed = 1415                       # Random seed for reproducibility
 ```
@@ -151,15 +151,71 @@ After training, load your finetuned model:
 import whisper
 from whisper_model_pl import WhisperModelModule
 
+class Config:
+    learning_rate = 1e-5              # Learning rate
+    weight_decay = 0.01               # Weight decay for regularization
+    adam_epsilon = 1e-8               # Adam optimizer epsilon
+    warmup_steps = 2000               # Learning rate warmup steps
+    train_batch_size = 32             # Training batch size
+    val_batch_size = 16               # Validation batch size
+    train_num_workers = 32            # Training data loader workers
+    val_num_workers = 16              # Validation data loader workers
+    num_train_epochs = 200            # Number of training epochs
+    gradient_accumulation_steps = 1   # Gradient accumulation steps
+    sample_rate = 16000               # Audio sample rate
+    seed = 1415                       # Random seed for reproducibility
+
 # Load the trained model
-model = WhisperModelModule.load_from_checkpoint('path/to/checkpoint.ckpt')
+cfg = Config()
+model_name = 'turbo'
+lang = 'ar'
+
+model = WhisperModelModule.load_from_checkpoint('path/to/checkpoint.ckpt', cfg=cfg, model_name=model_name, lang=lang)
 model.eval()
 
 # Transcribe audio
 result = model.model.transcribe('path/to/audio.wav')
 print(result['text'])
 ```
+## Convert PyTorch Lightning Checkpoint to The Official Whisper Format
+
+The converter script transforms a finetuned Whisper model from PyTorch Lightning checkpoint format to the official Whisper model format.
+
+### Command Line Syntax
+
+```bash
+python convert_ckpt_to_offical_whisper_format.py <whisper_model_name> <pytorch_lightning_checkpoint> <output_file>
+```
+
+### Parameters
+
+- `whisper_model_name`: The base Whisper model name (e.g., `base`, `small`, `medium`, `large`, `large-v2`, `large-v3`, `turbo`)
+- `pytorch_lightning_checkpoint`: Path to your PyTorch Lightning checkpoint file (`.ckpt`)
+- `output_file`: Desired output path for the converted model (`.pt`)
+
+### Example
+
+```bash
+python convert_ckpt_to_offical_whisper_format.py turbo my_finetuned_whisper.ckpt whisper_converted.pt
+```
+
+This converts a finetuned model based on Whisper-turbo from PyTorch Lightning format to standard Whisper format.
+
+### Loading the Converted Model
+
+After conversion, you can load the model using the standard Whisper API:
+
+```python
+import whisper
+model = whisper.load_model("whisper_converted.pt")
+```
+
+The converted model will retain all the finetuned weights while being compatible with the official Whisper interface.
+
+## Convert PyTorch Lightning Checkpoint to 🤗 Transformers Format
+First, you need to convert the PyTorch Lightning checkpoint to the official Whisper format as described in the previous section. Then, you can use the [Whisper checkpoint converter](https://github.com/huggingface/transformers/blob/main/src/transformers/models/whisper/convert_openai_to_hf.py) provided by 🤗 Transformers.
 
 ## Acknowledgments
 
 - The code in this project was inspired and partially copied from [this notebook](https://colab.research.google.com/drive/1P4ClLkPmfsaKn2tBbRp0nVjGMRKR-EWz?usp=sharing).
+- The evaluation code was copied from [this repo](https://github.com/abjadai/catt).

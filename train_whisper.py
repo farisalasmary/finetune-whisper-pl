@@ -24,7 +24,7 @@ class Config:
     
     Attributes:
         learning_rate (float): Learning rate for the optimizer
-        weight_decay (float): L2 regularization weight decay
+        weight_decay (float): Weight decay for regularization
         adam_epsilon (float): Epsilon value for Adam optimizer numerical stability
         warmup_steps (int): Number of warmup steps for learning rate scheduler
         train_batch_size (int): Training batch size
@@ -37,7 +37,7 @@ class Config:
         seed (int): Random seed for reproducibility
     """
     learning_rate = 1e-5             # Conservative learning rate for fine-tuning
-    weight_decay = 0.01              # L2 regularization to prevent overfitting
+    weight_decay = 0.01              # Weight decay for regularization to prevent overfitting
     adam_epsilon = 1e-8              # Small epsilon for numerical stability
     warmup_steps = 2000              # Gradual learning rate increase
     train_batch_size = 32            # Adjust based on GPU memory
