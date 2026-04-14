@@ -1,3 +1,4 @@
+# **NOTE:** This repo is no longer supported. Checkout the new repo: https://github.com/farisalasmary/finetune-openai-whisper
 # Whisper Finetuning with PyTorch Lightning
 
 This repository provides a complete pipeline for finetuning the official implementation of OpenAI's Whisper model for automatic speech recognition (ASR) using PyTorch Lightning.
